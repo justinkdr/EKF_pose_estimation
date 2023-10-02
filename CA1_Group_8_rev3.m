@@ -38,8 +38,6 @@ GPS_freq = 50;
 %Sample times for EKF and GPS are set below:
 T= 1/T_freq;
 T_GPS=1/GPS_freq;
-tt = 100; %total simulation time
-t = 0: T: tt; %Set timestamp array
 
 % Set initial error covariance P first:
 P = 1000*eye(5,5); %We set a large uncertainty first assuming we don't know location of vehicle
@@ -152,7 +150,6 @@ Ky = [];
 Kdx = [];
 Kdy = [];
 Kddx = [];
-dstate = [];
 
 %% Run EKF Algorithm
 
@@ -169,14 +166,12 @@ for k = 1:sample_size
         x(3) = x(3);
         x(4) = x(4);
         x(5) = 0.0000001; % This is to avoid calculation issues with the jacobian of process matrix A by not dividing value by 0
-        dstate(k) = 0;
     else % otherwise
         x(1) = x(1) + (x(4)/x(5)) * (sin(x(5)*T+x(3)) - sin(x(3)));
         x(2) = x(2) + (x(4)/x(5)) * (-cos(x(5)*T+x(3)) + cos(x(3)));
         x(3) = mod((x(3) + x(5)*T + pi), (2.0*pi)) - pi;
         x(4) = x(4);
         x(5) = x(5);
-        dstate(k) = 1;
     end
     
     % Calculate the Jacobian matrix JF of the process matrix F
